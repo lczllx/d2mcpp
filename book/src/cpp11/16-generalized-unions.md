@@ -224,6 +224,7 @@ double c = m.b; // 错误：未定义行为
 
 - 0 - [联合体默认成员初始化 - 最多一个变体成员可带默认初始化器](https://github.com/mcpp-community/d2mcpp/blob/main/dslings/cpp11/16-generalized-unions-0.cpp)
 - 1 - [联合体包含非平凡类型及生命周期管理 - placement new 构造 / 显式析构](https://github.com/mcpp-community/d2mcpp/blob/main/dslings/cpp11/16-generalized-unions-1.cpp)
+- 2 - [带标签的鉴别联合体 - 用 enum + union 实现简易 variant](https://github.com/mcpp-community/d2mcpp/blob/main/dslings/cpp11/16-generalized-unions-2.cpp)
 
 ### 练习代码自动检测命令
 
