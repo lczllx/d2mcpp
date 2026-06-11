@@ -222,8 +222,8 @@ double c = m.b; // 错误：未定义行为
 
 ### 练习代码主题
 
-- 0 - [联合体默认成员初始化](https://github.com/mcpp-community/d2mcpp/blob/main/dslings/cpp11/16-generalized-unions-0.cpp) — C++11 规则: 最多一个变体成员可带默认初始化器
-- 1 - [联合体包含非平凡类型及生命周期管理](https://github.com/mcpp-community/d2mcpp/blob/main/dslings/cpp11/16-generalized-unions-1.cpp) — placement new 构造 / 显式析构 / 非平凡成员的正确访问
+- 0 - [联合体默认成员初始化 - 最多一个变体成员可带默认初始化器](https://github.com/mcpp-community/d2mcpp/blob/main/dslings/cpp11/16-generalized-unions-0.cpp)
+- 1 - [联合体包含非平凡类型及生命周期管理 - placement new 构造 / 显式析构](https://github.com/mcpp-community/d2mcpp/blob/main/dslings/cpp11/16-generalized-unions-1.cpp)
 
 ### 练习代码自动检测命令
 
