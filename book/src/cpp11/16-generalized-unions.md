@@ -141,7 +141,7 @@ public:
         _Variant_storage<_Rest...> _Tail;
     };
 
-    _CONSTEXPR20 ~_Variant_storage_() noexcept {
+    _CONSTEXPR20 ~_Variant_storage_() {
         // 联合体不知道哪个成员活跃, 析构由外层 variant 控制
     }
     // ...
