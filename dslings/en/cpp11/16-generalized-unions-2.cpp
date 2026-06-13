@@ -98,8 +98,7 @@ int main() {
         d2x_assert_eq(v3.as_int(), D2X_YOUR_ANSWER);
 
         // When v3 goes out of scope, ~Value() sees tag == INTEGER, skips string destruction
-    }
-
+    }    
     D2X_WAIT
 
     return 0;

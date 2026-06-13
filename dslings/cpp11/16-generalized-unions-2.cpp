@@ -99,7 +99,6 @@ int main() {
 
         // 离开作用域时 ~Value() 发现 tag == INTEGER, 不析构 string
     }
-
     D2X_WAIT
 
     return 0;
