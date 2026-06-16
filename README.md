@@ -73,6 +73,17 @@ cd d2mcpp
 d2x checker
 ```
 
+> On Windows, `d2x checker` requires [xmake](https://xmake.io/#/getting_started) and a GCC toolchain (Mingw-w64). Install both first:
+>
+> ```
+> winget install xmake          # or: scoop install xmake
+> winget install MSYS2.MSYS2    # then in MSYS2: pacman -S mingw-w64-x86_64-gcc
+> ```
+>
+> Then configure xmake to use the GCC toolchain: `xmake f --toolchain=mingw`
+
+**👉 [more details...]
+
 **👉 [more details...](https://mcpp-community.github.io/d2mcpp/base/chapter_1.html)**
 
 ## Community

@@ -38,7 +38,17 @@ Invoke-Expression (Invoke-Webrequest 'https://raw.githubusercontent.com/openxlin
 
 ```bash
 d2x install d2mcpp
+cd d2mcpp
 ```
+
+> Windows 上需额外安装 [xmake](https://xmake.io/#/getting_started) 和 Mingw-w64 工具链:
+>
+> ```
+> winget install xmake          # 或: scoop install xmake
+> winget install MSYS2.MSYS2    # 然后在 MSYS2 中: pacman -S mingw-w64-x86_64-gcc
+> ```
+>
+> 然后配置 xmake 使用 GCC 工具链: `xmake f --toolchain=mingw`
 
 ### 本地电子书
 

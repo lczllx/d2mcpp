@@ -73,6 +73,17 @@ cd d2mcpp
 d2x checker
 ```
 
+> Windows 上 `d2x checker` 依赖 [xmake](https://xmake.io/#/getting_started) 和 GCC 工具链 (Mingw-w64)，需先安装两者:
+>
+> ```
+> winget install xmake          # 或: scoop install xmake
+> winget install MSYS2.MSYS2    # 然后在 MSYS2 中: pacman -S mingw-w64-x86_64-gcc
+> ```
+>
+> 然后配置 xmake 使用 GCC 工具链: `xmake f --toolchain=mingw`
+
+**👉 [更多细节...]
+
 **👉 [更多细节...](https://mcpp-community.github.io/d2mcpp/base/chapter_1.html)**
 
 ## 社区
