@@ -118,7 +118,51 @@ static_assert(fib(10) == 55, "");
 static_assert(fib(0) == 0, "");
 ```
 
-## II. Notes
+## II. Real-World Case — Compile-Time Index Sequences in the STL
+
+> C++14 introduced `std::integer_sequence` and `std::make_index_sequence`, which rely on relaxed constexpr for compile-time integer generation. The examples below cite the vendored [MSVC STL](https://github.com/mcpp-community/d2mcpp/tree/main/msvc-stl) (source: [`msvc-stl/stl/inc/tuple`](https://github.com/mcpp-community/d2mcpp/blob/main/msvc-stl/stl/inc/tuple#L323-L343)); `_Tag` / `_Tpl` are internal tags and types and can be ignored while reading
+
+### std::tuple Compile-Time Construction — index_sequence Unfolds Parameter Packs
+
+`std::tuple` must extract elements one by one from a tuple-like object and construct its own members — this process must happen at compile time. MSVC STL uses `make_index_sequence` to generate compile-time indices and expand parameter packs:
+
+```cpp
+// MSVC STL · msvc-stl/stl/inc/tuple (abridged)
+template <size_t... _Indices, class _Tpl>
+constexpr tuple(_Tag, _Tpl&& _Right, index_sequence<_Indices...>)
+    : _Mybase(static_cast<_Tpl&&>(_Right)._Get_rest()) {
+    // _Indices... is a compile-time-generated sequence 0, 1, 2, ... N-1
+    // Elements are extracted via get<_Indices>(_Right) one by one
+}
+
+// Public constructor — uses make_index_sequence to auto-generate indices
+explicit(false) constexpr tuple(_Exact_args_t, _Tpl&& _Right)
+    : tuple(_Tag{}, _STD forward<_Tpl>(_Right),
+        make_index_sequence<tuple_size_v<remove_reference_t<_Tpl>>>{}) {}
+```
+
+`make_index_sequence<N>` generates `index_sequence<0, 1, ..., N-1>` at compile time, enabling the tuple constructor to extract elements via `get<0>` / `get<1>` / ... sequentially. This is the canonical post-C++14 constexpr pattern — iteration is not a runtime concept but achieved through compile-time integer sequences and pack expansion
+
+### std::integer_sequence — the C++14 Compile-Time Integer Carrier
+
+```cpp
+// MSVC STL · msvc-stl/stl/inc/utility (abridged)
+template <class _Ty, _Ty... _Vals>
+struct integer_sequence {
+    static_assert(is_integral_v<_Ty>,
+        "integer_sequence<T, I...> requires T to be an integral type.");
+};
+
+template <size_t... _Vals>
+using index_sequence = integer_sequence<size_t, _Vals...>;
+
+template <size_t _Size>
+using make_index_sequence = __make_integer_seq<integer_sequence, size_t, _Size>;
+```
+
+> Summary: Both `std::make_index_sequence` and `std::tuple`'s compile-time construction depend on the relaxed constexpr environment introduced in C++14. Without constexpr that supports loops and branches, the standard library would rely entirely on compiler internals for integer sequence generation rather than on the expressive power of the C++ language itself
+
+## III. Notes
 
 ### Operations Still Banned in C++14 constexpr
 
@@ -157,7 +201,7 @@ int main() {
 
 A constexpr specifier does not change the ODR linkage in C++14 (C++17 later made constexpr functions implicitly inline), nor does it mean every function that can be constexpr should be. If a function is almost always called at runtime, adding constexpr increases the interface constraint with little practical benefit
 
-## III. Exercise Code
+## IV. Exercise Code
 
 ### Exercise Code Topics
 
@@ -170,7 +214,7 @@ A constexpr specifier does not change the ODR linkage in C++14 (C++17 later made
 d2x checker relaxed-constexpr
 ```
 
-## IV. Other
+## V. Other
 
 - [Discussion Forum](https://forum.d2learn.org/category/20)
 - [d2mcpp Tutorial Repository](https://github.com/mcpp-community/d2mcpp)

@@ -118,7 +118,51 @@ static_assert(fib(10) == 55, "");
 static_assert(fib(0) == 0, "");
 ```
 
-## 二、注意事项
+## 二、真实案例 - STL 中的 constexpr 编译期索引序列
+
+> C++14 同步引入了 `std::integer_sequence` 和 `std::make_index_sequence`, 它们正是依赖放宽后的 constexpr 才能实现的编译期工具。下面以仓库内置的 [MSVC STL](https://github.com/mcpp-community/d2mcpp/tree/main/msvc-stl) 为例 (源码: [`msvc-stl/stl/inc/tuple`](https://github.com/mcpp-community/d2mcpp/blob/main/msvc-stl/stl/inc/tuple#L323-L343)), `_Tag` / `_Tpl` 是库内部标记和类型, 阅读时可忽略
+
+### std::tuple 的编译期构造 — index_sequence 展开参数包
+
+`std::tuple` 需要从一个"类元组"对象中逐元素提取并构造自己的成员, 这个过程必须在编译期完成。MSVC STL 使用 `make_index_sequence` 生成编译期索引, 配合参数包展开实现:
+
+```cpp
+// MSVC STL · msvc-stl/stl/inc/tuple (有删节)
+template <size_t... _Indices, class _Tpl>
+constexpr tuple(_Tag, _Tpl&& _Right, index_sequence<_Indices...>)
+    : _Mybase(static_cast<_Tpl&&>(_Right)._Get_rest()) {
+    // _Indices... 是编译期生成的 0, 1, 2, ... N-1 索引序列
+    // 通过 get<_Indices>(_Right) 逐元素提取并构造
+}
+
+// 公开构造函数 — 用 make_index_sequence 自动生成索引
+explicit(false) constexpr tuple(_Exact_args_t, _Tpl&& _Right)
+    : tuple(_Tag{}, _STD forward<_Tpl>(_Right),
+        make_index_sequence<tuple_size_v<remove_reference_t<_Tpl>>>{}) {}
+```
+
+`make_index_sequence<N>` 在编译期生成 `index_sequence<0, 1, ..., N-1>`, 让 tuple 构造可以用 `get<0>` / `get<1>` / ... 依次提取元素。这正是 C++14 放宽 constexpr 后最经典的应用 — 循环不再是运行期概念, 而是通过编译期整数序列 + 参数包展开来完成
+
+### std::integer_sequence — C++14 引入的编译期整数载体
+
+```cpp
+// MSVC STL · msvc-stl/stl/inc/utility (有删节)
+template <class _Ty, _Ty... _Vals>
+struct integer_sequence {
+    static_assert(is_integral_v<_Ty>,
+        "integer_sequence<T, I...> requires T to be an integral type.");
+};
+
+template <size_t... _Vals>
+using index_sequence = integer_sequence<size_t, _Vals...>;
+
+template <size_t _Size>
+using make_index_sequence = __make_integer_seq<integer_sequence, size_t, _Size>;
+```
+
+> 小结: `std::make_index_sequence` 和 `std::tuple` 的编译期构造都依赖 C++14 放宽后的 constexpr 环境。没有 loop + branch 的 constexpr, 标准库就只能在编译器内部用黑魔法生成整数序列, 而不能用 C++ 语言自身的表达能力来实现
+
+## 三、注意事项
 
 ### C++14 constexpr 仍不支持的操作
 
@@ -157,7 +201,7 @@ int main() {
 
 把函数标记为 constexpr 并不改变其 ODR 链接属性 (C++17 起 constexpr 函数才隐式 inline), 也不代表所有能 constexpr 的都该 constexpr。如果一个函数几乎只在运行期调用, 加 constexpr 只增加了接口约束, 实际收益很小
 
-## 三、练习代码
+## 四、练习代码
 
 ### 练习代码主题
 
@@ -170,7 +214,7 @@ int main() {
 d2x checker relaxed-constexpr
 ```
 
-## 四、其他
+## 五、其他
 
 - [交流讨论](https://forum.d2learn.org/category/20)
 - [d2mcpp教程仓库](https://github.com/mcpp-community/d2mcpp)
