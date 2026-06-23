@@ -32,6 +32,9 @@
 
 - [Generic Lambdas](./cpp14/00-generic-lambdas.md)
 
+
+- [Return Type Deduction](./cpp14/03-return-type-deduction.md)
+
 # Additional Resources
 
 - [Changelog](changelog.md)
