@@ -40,10 +40,14 @@ __pycache__
 # d2x project files
 .xlings
 .vscode
-.xmake
 .zed
 llm.config.xlings
 media
-build
 .cache/
-dslings/compile_commands.json
+# d2x 学习进度与判定侧信道
+.d2x/state.json
+.d2x/result.ndjson
+
+# mcpp 构建产物
+target/
+compile_commands.json

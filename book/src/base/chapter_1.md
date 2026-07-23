@@ -64,12 +64,29 @@ d2x checker [name]
 
 > 注: 练习名支持模糊匹配
 
-### 同步最新的练习代码
+### 查看学习进度
 
-> 由于项目处于持续更新阶段, 可以使用下面的命令进行自动同步(如果同步失败, 可能需要手动用git进行更新项目代码)
+> 只读的进度总览,按章节聚合,不进入练习模式
 
 ```bash
-d2x update
+d2x status
+```
+
+### 原生模式(可选)
+
+> 每个 C++ 标准目录都是真实的 mcpp 工程,练习就是它的 tests/——不经过 d2x,直接用 mcpp 也能练:
+
+```bash
+mcpp test -p src/cpp11              # 整个 cpp11 的进度表(哪题绿哪题红)
+mcpp test -p src/cpp11 03-trailing  # 只跑名字匹配的练习
+```
+
+### 同步最新的练习代码
+
+> 项目处于持续更新阶段,更新使用 git(注意先保存/提交你已修改的练习):
+
+```bash
+git pull
 ```
 
 ## 2.自动化检测程序简介
@@ -81,26 +98,31 @@ d2x update
 ```cpp
 // d2mcpp: https://github.com/mcpp-community/d2mcpp
 // license: Apache-2.0
-// file: dslings/hello-mcpp.cpp
+// file: src/intro/tests/hello-mcpp.cpp
 //
 // Exercise/练习: 自动化代码练习使用教学
 //
 // Tips/提示:
-//    该项目是使用xlings工具搭建的自动化代码练习项目, 通过在项目根目录下
-//    执行 d2x checker 进入"编译器驱动开发模式"的练习代码自动检测.
-//    你需要根据控制台的报错和提示信息, 修改代码中的错误. 当修复所有编译错误和
-//    运行时检查点后, 你可以删除或注释掉代码中的 D2X_WAIT 宏, 会自动进入下一个练习.
+//    这是一个「练习即测试」的自动化代码练习项目。两种使用方式任选:
 //
-//      - D2X_WAIT: 该宏用于隔离不同练习, 你可以删除或注释掉该宏, 进入下一个练习.
-//      - d2x_assert_eq: 该宏用于运行时检查点, 你需要修复代码中的错误, 使得所有
-//      - D2X_YOUR_ANSWER: 该宏用于提示你需要修改的代码, 一般用于代码填空(即用正确的代码替换这个宏)
+//      d2x checker              引导模式: 自动检测,通过后进入下一题
+//      mcpp test -p src/intro       原生模式: 直接使用 mcpp 运行, 测试报告即学习进度
+//
+//    你需要根据控制台的报错和提示信息修改代码。约定只有三个:
+//
+//      - D2X_YOUR_ANSWER: 填空占位符 —— 用正确的代码替换它。它不是宏,
+//        只是一个没人定义的名字, 所以编译器会指着它报错, 那就是要填的地方
+//      - d2x::check / d2x::check_eq: 运行时检查点, 修复代码让所有检查通过
+//        (不能直接删除检查点)
+//      - d2x::wait(): 练习之间的路障 —— 读完这一课, 删掉它才算真正完成
 //
 // Auto-Checker/自动检测命令:
 //
 //   d2x checker hello-mcpp
 //
 
-#include <d2x/cpp/common.hpp>
+import std;
+import d2x;
 
 // 修改代码时可以观察到控制台"实时"的变化
 
@@ -110,13 +132,13 @@ int main() {
 
     int a = 1.1; // 1.修复这个运行时错误, 修改int为double, 通过检查
 
-    d2x_assert_eq(a, 1.1); // 2.运行时检查点, 需要修复代码通过所有检查点(不能直接删除检查点代码)
+    d2x::check_eq(a, 1.1, "a == 1.1"); // 2.运行时检查点, 需要修复代码通过所有检查点(不能直接删除检查点代码)
 
     D2X_YOUR_ANSWER b = a; // 3.修复这个编译错误, 给b一个合适的类型
 
-    d2x_assert_eq(b, 1); // 4.运行时检查点2
+    d2x::check_eq(b, 1, "b == 1"); // 4.运行时检查点2
 
-    D2X_WAIT // 5.删除或注释掉这个宏, 进入下一个练习(项目正式代码练习)
+    d2x::wait(); // 5.删除或注释掉这一行, 进入下一个练习(项目正式代码练习)
 
     return 0;
 }
@@ -125,23 +147,23 @@ int main() {
 **控制台输出及解释**
 
 ```bash
-🌏Progress: [>----------] 0/10 -->> 显示当前的练习进度
+🌏Progress: [>----------] 0/52 -->> 显示当前的练习进度
 
-[Target: 00-0-hello-mcpp] - normal -->> 当前的练习名
+[Exercise: hello-mcpp] -->> 当前的练习名
 
-❌ Error: Compilation/Running failed for dslings/hello-mcpp.cpp -->> 显示检测状态
+❌ Error: Compilation/Running failed for src/intro/tests/hello-mcpp.cpp -->> 显示检测状态
 
  The code exist some error!
 
----------C-Output--------- - 编译器输出信息
-[HONLY LOGW]: main: dslings/hello-mcpp.cpp:24 - ❌ | a == 1.1 (1 == 1.100000) -->> 错误提示及位置(24行)
-[HONLY LOGW]: main: dslings/hello-mcpp.cpp:26 - 🥳 Delete the D2X_WAIT to continue...
+---------Output--------- - 编译/运行输出信息
+❌ | a == 1.1 (1 == 1.1)  --> src/intro/tests/hello-mcpp.cpp:41 -->> 错误提示及位置(41行)
+🚧 | Delete the d2x::wait() to continue  --> src/intro/tests/hello-mcpp.cpp:47
 
 
 AI-Tips-Config: https://xlings.d2learn.org/documents/d2x/intro.html -->> AI提示(需要配置大模型的key, 可不使用)
 
 ---------E-Files---------
-dslings/hello-mcpp.cpp -->> 当前检测的文件
+src/intro/tests/hello-mcpp.cpp -->> 当前检测的文件
 -------------------------
 
 Homepage: https://github.com/openxlings/xlings
@@ -156,7 +178,7 @@ Homepage: https://github.com/openxlings/xlings
 ```bash
 {
     "version": "0.1.1",
-    "buildtools": "xmake d2x-buildtools",
+    "buildtools": "mcpp run -q -p d2x/buildtools --",
     "lang": "en",  < -- 修改这里
     ...
 }
@@ -166,16 +188,17 @@ Homepage: https://github.com/openxlings/xlings
 
 如果你希望使用 Neovim 编辑器并获得 LSP（clangd）支持, 可以按如下步骤进行配置
 
-**1.编辑项目配置文件`config.xlings`中的`editor`属性, 设置为`nvim` (或`zed`)**
+**1.编辑项目配置文件`.d2x.json`中的`editor`字段, 设置为`nvim` (或`zed`)**
 
-```bash
+```json
 {
-    "version": "0.1.1",
-    "buildtools": "xmake d2x-buildtools",
-    "lang": "en",  < -- 修改这里
+    "buildtools": "mcpp run -q -p d2x/buildtools --",
+    "editor": "nvim",
     ...
 }
 ```
+
+> 未配置时按 `$VISUAL` → `$EDITOR` → `code` 回退;支持 `{file}` 占位符;显式配空串表示关闭自动打开。
 
 **2.在项目根目录运行一键依赖安装和环境配置命令**
 

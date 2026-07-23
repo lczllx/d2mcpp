@@ -1,115 +1,81 @@
-name: Validate dslings reference solutions
+name: Validate exercises and reference solutions
+
+# 断言两件事，缺一不可：
+#   1. 每个练习「未完成时」不通过   —— 否则学习者会被直接跳过，练习形同虚设
+#   2. 每个参考答案「放进去后」通过 —— 否则参考答案本身是错的
+#
+# 练习即测试：e2e 走 `mcpp test`，与 `d2x checker` 内部的 Provider 是同一条
+# 链路，所以 CI 绿灯等价于学习者本地能跑通，而不是另一条平行的构建路径。
+#
+# 依赖 mcpp >= 0.0.104(测试能力批次:逐测试隔离 / 过滤 / --list / --timeout /
+# --message-format json / tests 吃 [build].flags)。pin 见 .xlings.json。
 
 on:
   push:
     branches: ["main"]
     paths:
-      - "dslings/**"
+      - "src/**"
       - "solutions/**"
       - "d2x/**"
-      - "xmake.lua"
+      - "mcpp.toml"
+      - ".d2x.json"
       - ".github/workflows/dslings-ref-ci.yml"
   pull_request:
     paths:
-      - "dslings/**"
+      - "src/**"
       - "solutions/**"
       - "d2x/**"
-      - "xmake.lua"
+      - "mcpp.toml"
+      - ".d2x.json"
       - ".github/workflows/dslings-ref-ci.yml"
   workflow_dispatch:
 
 jobs:
-  build-and-run-reference:
+  validate-exercises:
     runs-on: ubuntu-latest
 
     env:
-      XLINGS_VERSION: "0.4.14"
+      XLINGS_VERSION: "0.4.51"
+      XLINGS_NON_INTERACTIVE: "1"
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Xlings ${{ env.XLINGS_VERSION }}
+      # 官方一键安装脚本自带镜像回退。手动 curl GitHub release 包会被
+      # release CDN 的间歇性 504 打断。
+      - name: Install xlings ${{ env.XLINGS_VERSION }}
         run: |
           set -eu
-          curl -fsSL "https://github.com/openxlings/xlings/releases/download/v${XLINGS_VERSION}/xlings-${XLINGS_VERSION}-linux-x86_64.tar.gz" \
-            | tar -xzf - -C /tmp
-          /tmp/xlings-${XLINGS_VERSION}-linux-x86_64/bin/xlings self install
+          curl -fsSL https://raw.githubusercontent.com/openxlings/xlings/main/tools/other/quick_install.sh \
+            | bash -s "v${XLINGS_VERSION}"
           echo "$HOME/.xlings/subos/current/bin" >> "$GITHUB_PATH"
 
-      - name: Install xmake (via xlings)
-        run: xlings install xmake -y
-
-      - name: xmake config
-        run: xmake f -y
-
-      # Following steps go through the SAME `xmake d2x-buildtools` plugin
-      # path that `d2x checker` uses internally (see d2x/buildtools/xmake/main.lua).
-      # This way the CI exercises the real d2x integration code path, not a
-      # parallel xmake-only path. A passing CI here is what a learner would
-      # see if they ran `d2x checker cpp11-XX-feat-K-ref` locally.
-
-      - name: List all *-ref targets via d2x-buildtools
-        id: list_ref
+      # 按 .xlings.json 安装 mcpp。mcpp 自带工具链沙箱，无需另装 gcc。
+      - name: Install mcpp
         run: |
           set -eu
-          REF_TARGETS=$(xmake d2x-buildtools --command=list 2>/dev/null \
-            | tr ' ' '\n' \
-            | sed 's/@.*$//' \
-            | grep -E '\-ref$' \
-            | sort -u)
-          echo "Found $(echo "$REF_TARGETS" | wc -l) reference targets:"
-          echo "$REF_TARGETS"
-          echo "targets<<EOF" >> "$GITHUB_OUTPUT"
-          echo "$REF_TARGETS" >> "$GITHUB_OUTPUT"
-          echo "EOF" >> "$GITHUB_OUTPUT"
+          xlings update
+          xlings install -y
 
-      - name: Build all *-ref targets via d2x-buildtools
+      - name: Build d2x Provider
+        run: mcpp build -p d2x/buildtools
+
+      - name: Validate exercises and solutions (zh + en)
+        run: bash d2x/buildtools/tests/e2e.sh all
+
+      - name: Verify exercises ↔ solutions filename parity
         run: |
           set -eu
-          while IFS= read -r tgt; do
-            [ -z "$tgt" ] && continue
-            echo "::group::build $tgt"
-            xmake d2x-buildtools --command=build --target="$tgt"
-            echo "::endgroup::"
-          done <<< "${{ steps.list_ref.outputs.targets }}"
-
-      - name: Run all *-ref targets via d2x-buildtools and assert no ❌
-        run: |
-          set -eu
-          fail=0
-          while IFS= read -r tgt; do
-            [ -z "$tgt" ] && continue
-            echo "::group::run $tgt"
-            output=$(xmake d2x-buildtools --command=run --target="$tgt" 2>&1)
-            echo "$output"
-            if echo "$output" | grep -qE '❌|Compilation/Running failed'; then
-              echo "::error::reference target $tgt produced a ❌ — exercise solution does not pass its own asserts"
-              fail=1
-            fi
-            if echo "$output" | grep -q 'Delete the D2X_WAIT to continue'; then
-              echo "::error::reference target $tgt still contains D2X_WAIT — remove it from the solution"
-              fail=1
-            fi
-            echo "::endgroup::"
-          done <<< "${{ steps.list_ref.outputs.targets }}"
-          exit $fail
-
-      - name: Verify dslings ↔ solutions filename parity
-        run: |
-          set -eu
-          # Every dslings/{cpp,hpp} file should have a matching solutions/ counterpart
+          # en/ 镜像跳过 —— 参考答案与语言无关，两边共用同一份
           missing=0
-          while IFS= read -r f; do
-            rel="${f#dslings/}"
-            # Skip the en/ mirror — solutions are language-neutral
-            case "$rel" in
-              en/*) continue ;;
-            esac
-            if [ ! -f "solutions/$rel" ]; then
-              echo "::warning::missing solutions/$rel (paired with dslings/$rel)"
+          for f in $(find intro/tests cpp*/tests -name '*.cpp'); do
+            std="${f%%/*}"
+            rel="${f#*/tests/}"
+            if [ ! -f "solutions/$std/$rel" ]; then
+              echo "::warning::missing solutions/$std/$rel (paired with $f)"
               missing=$((missing+1))
             fi
-          done < <(find dslings -name '*.cpp' -not -path 'dslings/en/*')
+          done
           if [ "$missing" -gt 0 ]; then
-            echo "::warning::$missing dslings exercises do not yet have a reference solution. This is informational during the bring-up phase; tighten to error once cpp11 is fully covered."
+            echo "::warning::$missing 个练习尚无参考答案。铺开阶段仅作提示；覆盖完整后收紧为错误。"
           fi
