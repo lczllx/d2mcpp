@@ -13,5 +13,5 @@
   },
   "remoteUser": "vscode",
   "postCreateCommand": "/bin/bash .devcontainer/postCreate.sh",
-  "postAttachCommand": "d2x checker"
+  "postAttachCommand": "/bin/bash -c 'export PATH=\"$HOME/.xlings/subos/current/bin:$PATH\"; d2x checker'"
 }

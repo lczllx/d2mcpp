@@ -37,11 +37,13 @@
 
 ### 線上程式碼練習
 
-> [**點擊下方按鈕**](https://github.com/codespaces/new?hide_repo_select=true&ref=main&repo=mcpp-community/d2mcpp) 即可在雲端自動完成設定, 並進入練習程式碼偵測模式
+> [**點擊下方按鈕**](https://github.com/codespaces/new?hide_repo_select=true&ref=main&repo=mcpp-community/d2mcpp) —— 雲端自動完成環境設定(首次啟動需幾分鐘), 隨後自動進入練習偵測模式
 
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?hide_repo_select=true&ref=main&repo=mcpp-community/d2mcpp)
 
 ### 建立本地練習環境
+
+**第一步 - 安裝 d2x 工具**
 
 <details>
   <summary>點選查看xlings安裝指令</summary>
@@ -68,9 +70,29 @@ irm https://raw.githubusercontent.com/openxlings/xlings/main/tools/other/quick_i
 
 ```bash
 xlings install d2x -y        # 練習框架 CLI
-d2x install d2mcpp           # 一鍵獲取課程,環境自動配置
+```
+
+**第二步 - 獲取課程(二選一)**
+
+```bash
+# 方式 A - 一鍵安裝: 下載課程,環境自動配置
+d2x install d2mcpp
 cd d2mcpp
-d2x checker                  # 練習循環: 編輯 -> 保存 -> 自動檢測 -> 推進
+```
+
+```bash
+# 方式 B - git clone 原始碼
+git clone https://github.com/mcpp-community/d2mcpp.git   # 或你 fork 後的倉庫
+cd d2mcpp
+xlings install -y            # 按 .xlings.json 安裝固定版本工具鏈
+```
+
+> 建議: 先 fork 本倉庫再 clone 自己的 fork —— 通過 `git commit / push` 把練習進度保存到自己的倉庫裡。
+
+**第三步 - 開始練習**
+
+```bash
+d2x checker                  # 練習循環: 編輯 -> 保存 -> 自動偵測 -> 推進
 d2x status                   # 進度總覽
 ```
 
