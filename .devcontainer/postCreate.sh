@@ -6,7 +6,9 @@ sudo apt-get update
 sudo apt-get install -y ncurses-bin libtinfo6 libncursesw6 curl ca-certificates git
 
 if ! command -v xlings >/dev/null 2>&1; then
-  curl -fsSL https://raw.githubusercontent.com/openxlings/xlings/main/tools/other/quick_install.sh | bash -s "v0.4.68"
+  # postCreate 无控制终端:安装器探测 /dev/tty 会误判可读,必须显式声明非交互
+  curl -fsSL https://raw.githubusercontent.com/openxlings/xlings/main/tools/other/quick_install.sh \
+    | XLINGS_NON_INTERACTIVE=1 bash -s "v0.4.68"
 fi
 
 export PATH="$HOME/.xlings/subos/current/bin:$PATH"
