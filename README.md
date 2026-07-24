@@ -37,11 +37,13 @@
 
 ### Interactive Code Practice (Online)
 
-> [**click the button below**](https://github.com/codespaces/new?hide_repo_select=true&ref=main&repo=mcpp-community/d2mcpp) to automatically complete the configuration in the cloud and enter the practice code detection mode
+> [**click the button below**](https://github.com/codespaces/new?hide_repo_select=true&ref=main&repo=mcpp-community/d2mcpp) — the cloud environment configures itself (a few minutes on first launch), then the exercise checker starts automatically
 
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?hide_repo_select=true&ref=main&repo=mcpp-community/d2mcpp)
 
 ### Interactive Code Practice (Local)
+
+**Step 1 - Install the d2x tool**
 
 <details>
   <summary>click to view xlings installation command</summary>
@@ -68,8 +70,28 @@ irm https://raw.githubusercontent.com/openxlings/xlings/main/tools/other/quick_i
 
 ```bash
 xlings install d2x -y        # exercise framework CLI
-d2x install d2mcpp           # get the course, environment auto-configured
+```
+
+**Step 2 - Get the course (choose one)**
+
+```bash
+# Option A - one command: download the course, toolchain auto-configured
+d2x install d2mcpp
 cd d2mcpp
+```
+
+```bash
+# Option B - git clone the source
+git clone https://github.com/mcpp-community/d2mcpp.git   # or your fork
+cd d2mcpp
+xlings install -y            # toolchain pinned by .xlings.json
+```
+
+> Tip: fork this repo and clone your fork — `git commit / push` keeps your practice progress in your own repository.
+
+**Step 3 - Start practicing**
+
+```bash
 d2x checker                  # practice loop: edit -> save -> auto-check -> advance
 d2x status                   # progress overview
 ```

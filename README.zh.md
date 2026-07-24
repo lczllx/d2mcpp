@@ -33,15 +33,17 @@
 
 ## 快速开始
 
+> 尝试 `Code -> Book -> Video -> X -> Code`
+
 ### 在线代码练习
 
-> [**点击下面按钮**](https://github.com/codespaces/new?hide_repo_select=true&ref=main&repo=mcpp-community/d2mcpp) 即可在云端自动完成配置, 并进入练习代码检测模式
+> [**点击下面按钮**](https://github.com/codespaces/new?hide_repo_select=true&ref=main&repo=mcpp-community/d2mcpp) —— 云端自动完成环境配置(首次启动需几分钟), 随后自动进入练习检测模式
 
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?hide_repo_select=true&ref=main&repo=mcpp-community/d2mcpp)
 
 ### 搭建本地练习环境
 
-> 尝试 `Code -> Book -> Video -> X -> Code`
+**第一步 - 安装 d2x 工具**
 
 <details>
   <summary>点击查看xlings安装命令</summary>
@@ -68,8 +70,28 @@ irm https://raw.githubusercontent.com/openxlings/xlings/main/tools/other/quick_i
 
 ```bash
 xlings install d2x -y        # 练习框架 CLI
-d2x install d2mcpp           # 一键获取课程,环境自动配置
+```
+
+**第二步 - 获取课程(二选一)**
+
+```bash
+# 方式 A - 一键安装: 下载课程,环境自动配置
+d2x install d2mcpp
 cd d2mcpp
+```
+
+```bash
+# 方式 B - git clone 源码
+git clone https://github.com/mcpp-community/d2mcpp.git   # 或你 fork 后的仓库
+cd d2mcpp
+xlings install -y            # 按 .xlings.json 安装固定版本工具链
+```
+
+> 建议: 先 fork 本仓库再 clone 自己的 fork —— 通过 `git commit / push` 把练习进度保存到自己的仓库里。
+
+**第三步 - 开始练习**
+
+```bash
 d2x checker                  # 练习循环: 编辑 -> 保存 -> 自动检测 -> 推进
 d2x status                   # 进度总览
 ```
