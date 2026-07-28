@@ -8,6 +8,13 @@
 
 # d2mcpp Changelog
 
+## 2026/07
+
+**C++14 - 01 - Relaxed constexpr**
+
+- `Book`: [zh](https://mcpp-community.github.io/d2mcpp/cpp14/01-relaxed-constexpr.html) / [en](https://mcpp-community.github.io/d2mcpp/en/cpp14/01-relaxed-constexpr.html) - 2026/07/28
+- `Code`: [zh](https://github.com/mcpp-community/d2mcpp/blob/main/src/cpp14/tests/01-relaxed-constexpr/0.cpp) / [en](https://github.com/mcpp-community/d2mcpp/blob/main/src/en/cpp14/tests/01-relaxed-constexpr/0.cpp) - 2026/07/28
+
 ## 2025/11
 
 ---

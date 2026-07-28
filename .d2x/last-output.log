@@ -1,0 +1,6 @@
+In module imported at /home/lcz/dev_version/d2mcpp/src/cpp14/tests/00-generic-lambdas/0.cpp:23:1:
+d2x.harness: error: failed to read compiled module: No such file or directory
+d2x.harness: note: compiled module file is 'gcm.cache/d2x.harness.gcm'
+d2x.harness: note: imports must be built before being imported
+d2x.harness: fatal error: returning to the gate for a mechanical issue
+compilation terminated.
