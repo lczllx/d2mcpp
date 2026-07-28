@@ -1,0 +1,50 @@
+/home/lcz/dev_version/d2mcpp/src/cpp14/tests/00-generic-lambdas/0.cpp: In function 'int main()':
+/home/lcz/dev_version/d2mcpp/src/cpp14/tests/00-generic-lambdas/0.cpp:28:24: error: 'D2X_YOUR_ANSWER' has not been declared
+   28 |     auto identity = [](D2X_YOUR_ANSWER x) {
+      |                        ^~~~~~~~~~~~~~~
+/home/lcz/dev_version/d2mcpp/src/cpp14/tests/00-generic-lambdas/0.cpp:33:24: error: no match for call to '(main()::<lambda(int)>) (std::string)'
+   33 |     d2x::check(identity(std::string("hello")) == "hello", "identity(std::string(\"hello\")) == \"hello\"");
+      |                ~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~
+  • there are 2 candidates
+    /home/lcz/dev_version/d2mcpp/src/cpp14/tests/00-generic-lambdas/0.cpp:28:22:
+       28 |     auto identity = [](D2X_YOUR_ANSWER x) {
+          |                      ^
+    • candidate 1: 'int (*)(int)' (conversion)
+      /home/lcz/dev_version/d2mcpp/src/cpp14/tests/00-generic-lambdas/0.cpp:33:24:
+         33 |     d2x::check(identity(std::string("hello")) == "hello", "identity(std::string(\"hello\")) == \"hello\"");
+            |                ~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~
+      • candidate expects 2 arguments, 2 provided
+    • candidate 2: 'main()::<lambda(int)>'
+      /home/lcz/dev_version/d2mcpp/src/cpp14/tests/00-generic-lambdas/0.cpp:28:21:
+         28 |     auto identity = [](D2X_YOUR_ANSWER x) {
+            |                     ^
+      • no known conversion for argument 1 from 'std::string' {aka 'std::__cxx11::basic_string<char>'} to 'int'
+/home/lcz/dev_version/d2mcpp/src/cpp14/tests/00-generic-lambdas/0.cpp:34:35: error: 'D2X_YOUR_ANSWER' was not declared in this scope
+   34 |     d2x::check_eq(identity(3.14), D2X_YOUR_ANSWER, "identity(3.14) == D2X_YOUR_ANSWER");
+      |                                   ^~~~~~~~~~~~~~~
+/home/lcz/dev_version/d2mcpp/src/cpp14/tests/00-generic-lambdas/0.cpp: In lambda function:
+/home/lcz/dev_version/d2mcpp/src/cpp14/tests/00-generic-lambdas/0.cpp:38:16: error: 'D2X_YOUR_ANSWER' is not captured [-Wtemplate-body]
+   38 |         return D2X_YOUR_ANSWER;
+      |                ^~~~~~~~~~~~~~~
+/home/lcz/dev_version/d2mcpp/src/cpp14/tests/00-generic-lambdas/0.cpp:37:21: note: the lambda has no capture-default
+   37 |     auto greater = [](auto a, auto b) {
+      |                     ^
+/home/lcz/dev_version/d2mcpp/src/cpp14/tests/00-generic-lambdas/0.cpp:34:35: note: '<typeprefixerror>D2X_YOUR_ANSWER' declared here
+   34 |     d2x::check_eq(identity(3.14), D2X_YOUR_ANSWER, "identity(3.14) == D2X_YOUR_ANSWER");
+      |                                   ^~~~~~~~~~~~~~~
+/home/lcz/dev_version/d2mcpp/src/cpp14/tests/00-generic-lambdas/0.cpp: In function 'int main()':
+/home/lcz/dev_version/d2mcpp/src/cpp14/tests/00-generic-lambdas/0.cpp:41:23: error: invalid use of void expression
+   41 |     d2x::check(greater(5, 3), "greater(5, 3)");
+      |                ~~~~~~~^~~~~~
+/home/lcz/dev_version/d2mcpp/src/cpp14/tests/00-generic-lambdas/0.cpp:42:23: error: invalid use of void expression
+   42 |     d2x::check(greater(2.5, 1.2), "greater(2.5, 1.2)");
+      |                ~~~~~~~^~~~~~~~~~
+/home/lcz/dev_version/d2mcpp/src/cpp14/tests/00-generic-lambdas/0.cpp:43:23: error: invalid use of void expression
+   43 |     d2x::check(greater(std::string("z"), std::string("a")), "greater(std::string(\"z\"), std::string(\"a\"))");
+      |                ~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/lcz/dev_version/d2mcpp/src/cpp14/tests/00-generic-lambdas/0.cpp:50:32: error: invalid use of void expression
+   50 |     d2x::check_eq(get_type_size(42), sizeof(int), "get_type_size(42) == sizeof(int)");
+      |                   ~~~~~~~~~~~~~^~~~
+/home/lcz/dev_version/d2mcpp/src/cpp14/tests/00-generic-lambdas/0.cpp:51:32: error: invalid use of void expression
+   51 |     d2x::check_eq(get_type_size('c'), sizeof(char), "get_type_size('c') == sizeof(char)");
+      |                   ~~~~~~~~~~~~~^~~~~
